@@ -12,6 +12,6 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 
-Route::get('/authors', [AuthorController::class, 'index']);
-Route::get('/genres', [GenreController::class, 'index']);
+Route::apiResource('authors', AuthorController::class)->only(['index', 'store']);
+Route::apiResource('genres', GenreController::class)->only(['index', 'store']);
 Route::get('/books', [BookController::class, 'index']);
