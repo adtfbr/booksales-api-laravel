@@ -15,10 +15,10 @@ return new class extends Migration
         $table->id();
         $table->string('title');
         $table->text('description');
+        $table->foreignId('author_id')->constrained('authors')->onDelete('cascade');
         $table->decimal('price', 10, 2);
         $table->integer('stock');
         $table->string('cover_photo')->nullable();
-        $table->foreignId('author_id')->constrained('authors');
         $table->timestamps();
     });
     }

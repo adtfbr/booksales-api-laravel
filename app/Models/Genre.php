@@ -9,5 +9,11 @@ class Genre extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description'];
+    /**
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'name',
+        'description',
+    ];
 }

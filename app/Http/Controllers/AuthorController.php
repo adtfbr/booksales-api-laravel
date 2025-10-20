@@ -10,26 +10,73 @@ class AuthorController extends Controller
     public function index()
     {
         $authors = Author::all();
+
         return response()->json([
             'status' => 'success',
             'data' => $authors
         ]);
     }
 
-    public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'bio' => 'nullable|string',
-            'photo' => 'nullable|string',
-        ]);
 
-        $author = Author::create($validatedData);
+    public function show(string $id)
+    {
+        $author = Author::find($id);
+
+        if (!$author) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Author not found'
+            ], 404);
+        }
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Author created successfully',
             'data' => $author
-        ], 201);
+        ]);
+    }
+
+
+    public function update(Request $request, string $id)
+    {
+        $author = Author::find($id);
+
+        if (!$author) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Author not found'
+            ], 404);
+        }
+
+        $validated = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'bio' => 'sometimes|string',
+        ]);
+
+        $author->update($validated);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $author,
+            'message' => 'Author updated successfully'
+        ]);
+    }
+
+    public function destroy(string $id)
+    {
+        $author = Author::find($id);
+
+        if (!$author) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Author not found'
+            ], 404);
+        }
+
+        $author->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Author deleted successfully'
+        ]);
     }
 }
