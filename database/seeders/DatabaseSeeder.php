@@ -18,5 +18,18 @@ class DatabaseSeeder extends Seeder
             BookSeeder::class,
             GenreSeeder::class,
         ]);
+
+        User::factory()->create([
+            'name' => 'Admin User',
+            'email' => 'admin@gmail.com',
+            'role' => 'admin',
+        ]);
+
+        User::factory(10)->create([
+            'role' => 'user',
+        ]);
+        
+        $this->call(TransactionSeeder::class);
     }
+    
 }
