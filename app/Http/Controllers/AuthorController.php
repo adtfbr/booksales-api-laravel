@@ -2,81 +2,52 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Author;
+use Illuminate\Http\Request;
+use App\Http\Resources\AuthorResource;
 
 class AuthorController extends Controller
 {
     public function index()
     {
-        $authors = Author::all();
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $authors
-        ]);
+        return AuthorResource::collection(Author::all());
     }
 
-
-    public function show(string $id)
+    public function store(Request $request)
     {
-        $author = Author::find($id);
-
-        if (!$author) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Author not found'
-            ], 404);
-        }
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $author
-        ]);
-    }
-
-
-    public function update(Request $request, string $id)
-    {
-        $author = Author::find($id);
-
-        if (!$author) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Author not found'
-            ], 404);
-        }
-
         $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'bio' => 'sometimes|string',
+            'name' => 'required|string|max:255',
+            'photo' => 'nullable|string',
+            'bio' => 'nullable|string',
+        ]);
+
+        $author = Author::create($validated);
+
+        return new AuthorResource($author);
+    }
+
+    public function show(Author $author)
+    {
+        return new AuthorResource($author);
+    }
+
+    public function update(Request $request, Author $author)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'photo' => 'nullable|string',
+            'bio' => 'nullable|string',
         ]);
 
         $author->update($validated);
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $author,
-            'message' => 'Author updated successfully'
-        ]);
+        return new AuthorResource($author);
     }
 
-    public function destroy(string $id)
+    public function destroy(Author $author)
     {
-        $author = Author::find($id);
-
-        if (!$author) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Author not found'
-            ], 404);
-        }
-
         $author->delete();
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Author deleted successfully'
-        ]);
+        return response()->noContent();
     }
 }

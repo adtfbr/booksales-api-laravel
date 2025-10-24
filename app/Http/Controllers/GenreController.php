@@ -2,78 +2,50 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Genre;
+use Illuminate\Http\Request;
+use App\Http\Resources\GenreResource;
 
 class GenreController extends Controller
 {
     public function index()
     {
-        $genres = Genre::all();
-        return response()->json([
-            'status' => 'success',
-            'data' => $genres
-        ]);
+        return GenreResource::collection(Genre::all());
     }
 
-    public function show(string $id)
+    public function store(Request $request)
     {
-        $genre = Genre::find($id);
-
-        if (!$genre) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Genre not found'
-            ], 404);
-        }
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $genre
-        ]);
-    }
-
-    public function update(Request $request, string $id)
-    {
-        $genre = Genre::find($id);
-
-        if (!$genre) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Genre not found'
-            ], 404);
-        }
-
         $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'description' => 'sometimes|string',
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $genre = Genre::create($validated);
+
+        return new GenreResource($genre);
+    }
+
+    public function show(Genre $genre)
+    {
+        return new GenreResource($genre);
+    }
+
+    public function update(Request $request, Genre $genre)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
         ]);
 
         $genre->update($validated);
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $genre,
-            'message' => 'Genre updated successfully'
-        ]);
+        return new GenreResource($genre);
     }
 
-    public function destroy(string $id)
+    public function destroy(Genre $genre)
     {
-        $genre = Genre::find($id);
-
-        if (!$genre) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Genre not found'
-            ], 404);
-        }
-
         $genre->delete();
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Genre deleted successfully'
-        ]);
+        return response()->noContent();
     }
 }

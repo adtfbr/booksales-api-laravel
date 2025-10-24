@@ -15,8 +15,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             AuthorSeeder::class,
-            BookSeeder::class,
             GenreSeeder::class,
+            BookSeeder::class,
         ]);
 
         User::factory()->create([
@@ -28,8 +28,8 @@ class DatabaseSeeder extends Seeder
         User::factory(10)->create([
             'role' => 'user',
         ]);
-        
+
         $this->call(TransactionSeeder::class);
     }
-    
+
 }
